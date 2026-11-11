@@ -6,6 +6,7 @@
 //
 
 #import "AvroKeyboardController.h"
+#import "MainMenuAppDelegate.h"
 #import "Suggestion.h"
 #import "Candidates.h"
 #import "CacheManager.h"
@@ -29,6 +30,32 @@
     }
 
 	return self;
+}
+
+- (id)activeClient:(id)sender {
+    if (sender != nil) {
+        _currentClient = sender;
+    } else {
+        id client = [self client];
+        if (client != nil) {
+            _currentClient = client;
+        }
+    }
+    return _currentClient;
+}
+
+- (void)activateServer:(id)sender {
+    [self activeClient:sender];
+    [super activateServer:sender];
+}
+
+- (void)deactivateServer:(id)sender {
+    if (_composedBuffer.length > 0) {
+        [self commitComposition:sender];
+    } else {
+        [[Candidates sharedInstance] hide];
+    }
+    [super deactivateServer:sender];
 }
 
 - (void)dealloc {
@@ -130,7 +157,10 @@
 }
 
 - (void)candidateSelected:(NSAttributedString*)candidateString {
-    [_currentClient insertText:candidateString replacementRange:NSMakeRange(NSNotFound, 0)];
+    id client = [self activeClient:nil];
+    if (candidateString != nil && client != nil) {
+        [client insertText:candidateString replacementRange:NSMakeRange(NSNotFound, 0)];
+    }
 	
 	[self clearCompositionBuffer];
 	[_currentCandidates removeAllObjects];
@@ -138,6 +168,10 @@
 }
 
 - (void)commitComposition:(id)sender {
+    if (_composedBuffer.length == 0 || sender == nil) {
+        [[Candidates sharedInstance] hide];
+        return;
+    }
 	[sender insertText:_composedBuffer replacementRange:NSMakeRange(NSNotFound, 0)];
 	
 	[self clearCompositionBuffer];
@@ -179,6 +213,7 @@
     // Return YES to indicate the the key input was received and dealt with.  Key processing will not continue in that case.  In
     // other words the system will not deliver a key down event to the application.
     // Returning NO means the original key down will be passed on to the client.
+    [self activeClient:sender];
     if ([string isEqualToString:@" "]) {
         if (_currentCandidates && [_currentCandidates count]) {
             [self candidateSelected:[[Candidates sharedInstance] selectedCandidateString]];
@@ -238,8 +273,12 @@
 
 - (void)commitText:(NSString*)string {
     if (_currentCandidates) {
-        [self candidateSelected:[[Candidates sharedInstance] selectedCandidateString]];
-        [_currentClient insertText:string replacementRange:NSMakeRange(NSNotFound, 0)];
+        NSAttributedString *selected = [[Candidates sharedInstance] selectedCandidateString];
+        [self candidateSelected:selected];
+        id client = [self activeClient:nil];
+        if (string.length > 0 && client != nil) {
+            [client insertText:string replacementRange:NSMakeRange(NSNotFound, 0)];
+        }
     }
     else {
         NSBeep();
@@ -247,7 +286,11 @@
 }
 
 - (NSMenu*)menu {
-    return [[NSApp delegate] menu];
+    id delegate = [NSApp delegate];
+    if ([delegate isKindOfClass:[MainMenuAppDelegate class]]) {
+        return [(MainMenuAppDelegate *)delegate menu];
+    }
+    return nil;
 }
 
 @end

@@ -26,6 +26,16 @@
 	if (preferences) {
 		[preferences setAction:@selector(showPreferences:)];
 	}
+
+    // macOS 27 hides menu-item images for apps linked on the 27 SDK, including
+    // image-only items. Keep any image this input method's menu still relies on.
+    if (@available(macOS 27.0, *)) {
+        for (NSMenuItem *item in [_menu itemArray]) {
+            if (item.image != nil) {
+                item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+            }
+        }
+    }
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"IncludeDictionary"]) {
         NSLog(@"Loading Dictionary...");

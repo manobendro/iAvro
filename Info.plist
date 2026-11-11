@@ -13,15 +13,17 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>«PROJECTNAME»</string>
+	<string>Avro Keyboard</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.6</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.6</string>
 	<key>InputMethodConnectionName</key>
-	<string>Avro_Keyboard_Connection</string>
+	<string>com.omicronlab.inputmethod.AvroKeyboard_Connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>AvroKeyboardController</string>
 	<key>LSBackgroundOnly</key>
@@ -30,9 +32,15 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSSupportsSuddenTermination</key>
+	<true/>
+	<key>TISIntendedLanguage</key>
+	<string>bn</string>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
-		<string>Latn</string>
+		<string>Beng</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>avro.icns</string>
